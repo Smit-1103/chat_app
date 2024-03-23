@@ -1,4 +1,4 @@
-import 'package:chat_app/screens/other_screen.dart';
+import 'package:chat_app/screens/toggle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -13,12 +13,17 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen>
     with SingleTickerProviderStateMixin {
+  final _form = GlobalKey<FormState>();
+
   late AnimationController _controller;
   late Animation<double> _animation;
   bool _isLoading = false;
   bool _isSingupLoading = false;
 
   bool _isObscure = true;
+
+  var _enteredEmail = '';
+  var _enteredPassword = '';
 
   void _toggleObscure() {
     setState(() {
@@ -47,52 +52,74 @@ class _AuthScreenState extends State<AuthScreen>
   }
 
   void _login() {
-    // Implement your login logic here
 
     setState(() {
-      _isLoading = true; // Set isLoading to true when login process starts
-    });
+    _isLoading = true;
+  });
 
-    // Simulating login process
-    Future.delayed(const Duration(seconds: 2), () {
-      // After login process completes
+  final isValid = _form.currentState!.validate();
+
+  if (isValid) {
+    _form.currentState!.save();
+    print(_enteredEmail);
+    print(_enteredPassword);
+
+    // Simulating sign-up process
+    Future.delayed(const Duration(seconds: 1), () {
+      // After sign-up process completes
       setState(() {
-        _isLoading = false; // Set isLoading to false when login is complete
+        _isLoading = false;
       });
-      // Navigate to OtherScreen after login process completes
+      // Navigate to ToggleButtonScreen after sign-up process completes
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const OtherScreen(),
+          builder: (context) => const ToggleButtonScreen(),
         ),
       );
     });
+  } else {
+    // If validation fails, stop loading and return from the method
+    setState(() {
+      _isLoading = false;
+    });
+    return;
+  }
   }
 
   void _signUp() {
-    // Implement your sign up logic here
+  setState(() {
+    _isSingupLoading = true;
+  });
 
-    // Implement your login logic here
+  final isValid = _form.currentState!.validate();
 
-    setState(() {
-      _isSingupLoading =
-          true; // Set isLoading to true when login process starts
-    });
+  if (isValid) {
+    _form.currentState!.save();
+    print(_enteredEmail);
+    print(_enteredPassword);
 
-    // Simulating login process
-    Future.delayed(const Duration(seconds: 2), () {
-      // After login process completes
+    // Simulating sign-up process
+    Future.delayed(const Duration(seconds: 1), () {
+      // After sign-up process completes
       setState(() {
-        _isSingupLoading =
-            false; // Set isLoading to false when login is complete
+        _isSingupLoading = false;
       });
-      // Navigate to OtherScreen after login process completes
+      // Navigate to ToggleButtonScreen after sign-up process completes
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const OtherScreen(),
+          builder: (context) => const ToggleButtonScreen(),
         ),
       );
     });
+  } else {
+    // If validation fails, stop loading and return from the method
+    setState(() {
+      _isSingupLoading = false;
+    });
+    return;
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -114,197 +141,207 @@ class _AuthScreenState extends State<AuthScreen>
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              FadeTransition(
-                opacity: _animation,
-                child: SizedBox(
-                  height: 300,
-                  child: Lottie.asset(
-                    'assets/images/chatApp.json',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              FadeTransition(
-                opacity: _animation,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                          color: Color.fromARGB(255, 39, 39, 39)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                          color: Color.fromARGB(255, 39, 39, 39)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                          color: Color.fromARGB(255, 55, 90, 100)),
+          child: Form(
+            key: _form,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                FadeTransition(
+                  opacity: _animation,
+                  child: SizedBox(
+                    height: 300,
+                    child: Lottie.asset(
+                      'assets/images/chatApp.json',
+                      fit: BoxFit.contain,
                     ),
                   ),
-                  keyboardType: TextInputType.emailAddress,
-                  autocorrect: false,
-                  textCapitalization: TextCapitalization.none,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    // Add additional validation if necessary
-                    return null;
-                  },
                 ),
-              ),
-              const SizedBox(height: 20),
-              FadeTransition(
-                opacity: _animation,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isObscure ? Icons.visibility_off : Icons.visibility,
+                const SizedBox(height: 20),
+                FadeTransition(
+                  opacity: _animation,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 39, 39, 39)),
                       ),
-                      onPressed: _toggleObscure,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 39, 39, 39)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 55, 90, 100)),
+                      ),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                          color: Color.fromARGB(255, 39, 39, 39)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                          color: Color.fromARGB(255, 39, 39, 39)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                          color: Color.fromARGB(255, 55, 90, 100)),
-                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    autocorrect: false,
+                    textCapitalization: TextCapitalization.none,
+                    validator: (value) {
+                      if (value == null ||
+                          value.trim().isEmpty ||
+                          !value.contains('@')) {
+                        return 'Please enter your email';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _enteredEmail = value!;
+                    },
                   ),
-                  obscureText: _isObscure,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    // Add additional validation if necessary
-                    return null;
-                  },
                 ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Expanded(
-                    child: FadeTransition(
-                      opacity: _animation,
-                      child: OutlinedButton(
-                        onPressed: _isLoading ? null : _login,
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          side: const BorderSide(
-                            color: Color.fromARGB(255, 240, 39, 89),
-                          ),
+                const SizedBox(height: 20),
+                FadeTransition(
+                  opacity: _animation,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isObscure ? Icons.visibility_off : Icons.visibility,
                         ),
-                        child: _isLoading
-                            ? const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Logging In...',
-                                    style: TextStyle(
-                                      color: Color.fromARGB(255, 240, 39, 89),
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Color.fromARGB(255, 240, 39, 89),
+                        onPressed: _toggleObscure,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 39, 39, 39)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 39, 39, 39)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 55, 90, 100)),
+                      ),
+                    ),
+                    obscureText: _isObscure,
+                    validator: (value) {
+                      if (value == null || value.trim().length < 6) {
+                        return 'Password must be at least 6 characters long.';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _enteredPassword = value!;
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Expanded(
+                      child: FadeTransition(
+                        opacity: _animation,
+                        child: OutlinedButton(
+                          onPressed: _isLoading ? null : _login,
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            side: const BorderSide(
+                              color: Color.fromARGB(255, 240, 39, 89),
+                            ),
+                          ),
+                          child: _isLoading
+                              ? const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Logging In...',
+                                      style: TextStyle(
+                                        color: Color.fromARGB(255, 240, 39, 89),
+                                        fontSize: 18,
                                       ),
                                     ),
-                                  ),
-                                ],
-                              )
-                            : const Text(
-                                'Login',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 240, 39, 89),
-                                  fontSize: 18,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: FadeTransition(
-                      opacity: _animation,
-                      child: ElevatedButton(
-                        onPressed: _isSingupLoading ? null : _signUp,
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: const Color.fromARGB(
-                              255, 240, 39, 89), // Text color
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: _isSingupLoading
-                            ? const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Signing up...',
-                                    style: TextStyle(
-                                      color: const Color.fromARGB(
-                                          255, 240, 39, 89),
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        const Color.fromARGB(255, 240, 39, 89),
+                                    SizedBox(width: 8),
+                                    SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          Color.fromARGB(255, 240, 39, 89),
+                                        ),
                                       ),
                                     ),
+                                  ],
+                                )
+                              : const Text(
+                                  'Login',
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 240, 39, 89),
+                                    fontSize: 18,
                                   ),
-                                ],
-                              )
-                            : const Text(
-                                'Signup',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
                                 ),
-                              ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: FadeTransition(
+                        opacity: _animation,
+                        child: ElevatedButton(
+                          onPressed: _isSingupLoading ? null : _signUp,
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: const Color.fromARGB(
+                                255, 240, 39, 89), // Text color
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: _isSingupLoading
+                              ? const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Signing up...',
+                                      style: TextStyle(
+                                        color: Color.fromARGB(255, 228, 14, 68),
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          Color.fromARGB(255, 228, 14, 68),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : const Text(
+                                  'Signup',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
