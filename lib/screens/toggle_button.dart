@@ -5,7 +5,7 @@ import 'package:lottie/lottie.dart';
 enum SelectedSegment { login, signup }
 
 class ToggleButtonScreen extends StatefulWidget {
-  const ToggleButtonScreen({Key? key}) : super(key: key);
+  const ToggleButtonScreen({super.key});
 
   @override
   _ToggleButtonScreenState createState() => _ToggleButtonScreenState();
