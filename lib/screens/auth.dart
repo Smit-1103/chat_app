@@ -1,9 +1,13 @@
 import 'package:chat_app/screens/toggle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+//give access to fiebase object
+final _firebase = FirebaseAuth.instance;
 
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({Key? key}) : super(key: key);
+  const AuthScreen({super.key});
 
   @override
   State<AuthScreen> createState() {
@@ -51,75 +55,117 @@ class _AuthScreenState extends State<AuthScreen>
     super.dispose();
   }
 
-  void _login() {
-
+  void _login() async {
     setState(() {
-    _isLoading = true;
-  });
+      _isLoading = true;
+    });
 
-  final isValid = _form.currentState!.validate();
+    final isValid = _form.currentState!.validate();
 
-  if (isValid) {
-    _form.currentState!.save();
-    print(_enteredEmail);
-    print(_enteredPassword);
+    if (isValid) {
+      _form.currentState!.save();
 
-    // Simulating sign-up process
-    Future.delayed(const Duration(seconds: 1), () {
-      // After sign-up process completes
+      // Simulating login process
+      Future.delayed(const Duration(seconds: 1), () {
+        // After login process completes
+        setState(() {
+          _isLoading = false;
+        });
+        // Navigate to ToggleButtonScreen after login process completes
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const ToggleButtonScreen(),
+          ),
+        );
+      });
+    } else {
+      // If validation fails, stop loading and return from the method
       setState(() {
         _isLoading = false;
       });
-      // Navigate to ToggleButtonScreen after sign-up process completes
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const ToggleButtonScreen(),
+      return;
+    }
+
+    //login process
+    try {
+      final userCredentials = _firebase.signInWithEmailAndPassword(
+          email: _enteredEmail, password: _enteredPassword);
+
+      print(userCredentials);
+
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('You have successfully Logged in.'),
         ),
       );
-    });
-  } else {
-    // If validation fails, stop loading and return from the method
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-logged-in') {
+        //error message
+      }
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? 'Login Failed.'),
+        ),
+      );
+    }
+  }
+
+  void _signUp() async {
     setState(() {
-      _isLoading = false;
+      _isSingupLoading = true;
     });
-    return;
-  }
-  }
 
-  void _signUp() {
-  setState(() {
-    _isSingupLoading = true;
-  });
+    final isValid = _form.currentState!.validate();
 
-  final isValid = _form.currentState!.validate();
-
-  if (isValid) {
-    _form.currentState!.save();
-    print(_enteredEmail);
-    print(_enteredPassword);
-
-    // Simulating sign-up process
-    Future.delayed(const Duration(seconds: 1), () {
-      // After sign-up process completes
+    if (isValid) {
+      Future.delayed(const Duration(seconds: 1), () {
+        _form.currentState!.save();
+        // After sign-up process completes
+        setState(() {
+          _isSingupLoading = false;
+        });
+        // Navigate to ToggleButtonScreen after sign-up process completes
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const ToggleButtonScreen(),
+          ),
+        );
+      });
+    } else {
+      // If validation fails, stop loading and return from the method
       setState(() {
         _isSingupLoading = false;
       });
-      // Navigate to ToggleButtonScreen after sign-up process completes
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const ToggleButtonScreen(),
+      return;
+    }
+
+    //user sign in in firebase
+    try {
+      final userCredentials = await _firebase.createUserWithEmailAndPassword(
+          email: _enteredEmail, password: _enteredPassword);
+
+      print(userCredentials);
+
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Authentication is complete.'),
         ),
       );
-    });
-  } else {
-    // If validation fails, stop loading and return from the method
-    setState(() {
-      _isSingupLoading = false;
-    });
-    return;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-uer') {
+        //error message
+      }
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? 'Authentication Failed.'),
+        ),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {

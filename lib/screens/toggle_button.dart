@@ -11,8 +11,31 @@ class ToggleButtonScreen extends StatefulWidget {
   _ToggleButtonScreenState createState() => _ToggleButtonScreenState();
 }
 
-class _ToggleButtonScreenState extends State<ToggleButtonScreen> {
+class _ToggleButtonScreenState extends State<ToggleButtonScreen>
+    with SingleTickerProviderStateMixin {
   SelectedSegment currentSegment = SelectedSegment.login;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +121,13 @@ class _ToggleButtonScreenState extends State<ToggleButtonScreen> {
   }
 
   Widget _buildContent() {
+    return FadeTransition(
+      opacity: _animation,
+      child: _buildContentBasedOnSegment(),
+    );
+  }
+
+  Widget _buildContentBasedOnSegment() {
     switch (currentSegment) {
       case SelectedSegment.login:
         return _buildLoginContent();
@@ -106,24 +136,23 @@ class _ToggleButtonScreenState extends State<ToggleButtonScreen> {
     }
   }
 
-Widget _buildLoginContent() {
-  return SizedBox(
-    height: 300,
-    child: Lottie.asset(
-      'assets/images/login.json',
-      fit: BoxFit.contain,
-    ),
-  );
-}
+  Widget _buildLoginContent() {
+    return SizedBox(
+      height: 300,
+      child: Lottie.asset(
+        'assets/images/login.json',
+        fit: BoxFit.contain,
+      ),
+    );
+  }
 
-Widget _buildSignupContent() {
-  return SizedBox(
-    height: 300,
-    child: Lottie.asset(
-      'assets/images/signup.json',
-      fit: BoxFit.contain,
-    ),
-  );
-}
-
+  Widget _buildSignupContent() {
+    return SizedBox(
+      height: 300,
+      child: Lottie.asset(
+        'assets/images/signup.json',
+        fit: BoxFit.contain,
+      ),
+    );
+  }
 }
