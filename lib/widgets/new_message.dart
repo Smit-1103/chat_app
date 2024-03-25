@@ -11,64 +11,62 @@ class NewMessage extends StatefulWidget {
 
 class _NewMessageState extends State<NewMessage> {
   final _messageController = TextEditingController();
-  // FocusNode _messageFocusNode = FocusNode();
 
   @override
   void dispose() {
     _messageController.dispose();
-    // _messageFocusNode.dispose();
     super.dispose();
   }
+void _submitMessage() async {
+  final enteredMessage = _messageController.text;
 
-  // void _openKeyboard() {
-  //   // Focus the text field
-  //   _messageFocusNode.requestFocus();
+  if (enteredMessage.trim().isEmpty) {
+    return;
+  }
 
-  //   // Open the native emoji keyboard
-  //   Future.delayed(const Duration(milliseconds: 100), () {
-  //     if (Theme.of(context).platform == TargetPlatform.iOS) {
-  //       // For iOS devices, use the system method to show the keyboard
-  //       SystemChannels.textInput.invokeMethod('TextInput.show');
-  //     } else if (Theme.of(context).platform == TargetPlatform.android) {
-  //       // For Android devices, use the system method to show the emoji keyboard
-  //       SystemChannels.textInput
-  //           .invokeMethod('TextInput.showInputMethodPicker');
-  //     }
-  //   });
-  // }
+  // Close the keyboard after sending the message
+  FocusScope.of(context).unfocus();
 
-  void _submitMessage() async {
-    final enteredMessage = _messageController.text;
+  // Clear the text field after sending the message
+  _messageController.clear();
 
-    if (enteredMessage.trim().isEmpty) {
-      return;
-    }
+  // Get the currently logged-in user
+  final user = FirebaseAuth.instance.currentUser!;
+  
+  // Get user data from Firestore
+  final userData = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
-    // this is used to close the keyboard after sending the message
-    FocusScope.of(context).unfocus();
-
-    // Clear the textfield after sending the message
-    _messageController.clear();
-    // to get the name of currently logged in user we have to take name from the firebase
-    final user = FirebaseAuth.instance.currentUser;
-    final userData = await FirebaseFirestore.instance
-        .collection('user')
-        .doc(user?.uid)
-        .get();
-
-    
-    print('WE ARE AFTER THEINSTANCE');
-
-    // Send to firebase
+  if (userData.exists) {
+    // Send message to Firebase
     FirebaseFirestore.instance.collection('chat').add({
       'text': enteredMessage,
       'createdAT': Timestamp.now(),
-      'userId': user?.uid,
+      'userId': user.uid,
       'username': userData.data()!['username'],
       'userImage': userData.data()!['image_url'],
     });
-    print('WE ARE AFTER THE FIREBASEFIRESTORE INSTANCE');
+  } else {
+    print('User data does not exist');
+    // Handle the case where user data does not exist
+    // For example, you can display an error message to the user
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('User Data Not Found'),
+        content: Text('Your user data is not available. Please try again later.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +88,6 @@ class _NewMessageState extends State<NewMessage> {
                     Icons.emoji_emotions_outlined,
                   ),
                   onPressed: () {},
-                  // onPressed: _openKeyboard,
                 ),
                 const SizedBox(
                   width: 5,
@@ -105,7 +102,6 @@ class _NewMessageState extends State<NewMessage> {
                       padding: const EdgeInsets.symmetric(horizontal: 19),
                       child: TextField(
                         controller: _messageController,
-                        // focusNode: _messageFocusNode,
                         textCapitalization: TextCapitalization.sentences,
                         autocorrect: true,
                         enableSuggestions: true,
@@ -121,7 +117,7 @@ class _NewMessageState extends State<NewMessage> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.send),
+                  icon: const Icon(Icons.send_rounded),
                   onPressed: _submitMessage,
                   color: Theme.of(context).colorScheme.primary,
                 ),

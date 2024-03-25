@@ -98,19 +98,9 @@ class _AuthScreenState extends State<AuthScreen>
           email: _enteredEmail, password: _enteredPassword);
 
       // If login successful, userCredentials will not be null
-      if (userCredentials != null) {
-        // Perform actions after successful login
-        print(userCredentials);
-      } else {
-        // If userCredentials is null, login failed
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Invalid email or password. Please try again.'),
-          ),
-        );
-      }
-    } on FirebaseAuthException catch (e) {
+      // Perform actions after successful login
+      print(userCredentials);
+        } on FirebaseAuthException catch (e) {
       String errorMessage = 'Login Failed. Kindly recheck your credentials.';
       if (e.code == 'wrong-password' || e.code == 'user-not-found') {
         errorMessage = 'Invalid email or password. Please try again.';
