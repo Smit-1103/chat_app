@@ -1,10 +1,17 @@
 import 'package:chat_app/widgets/chat_messages.dart';
 import 'package:chat_app/widgets/new_message.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+extension StringExtension on String {
+  String capitalizeFirstLetter() {
+    if (this.isEmpty) return this;
+    return this.substring(0, 1).toUpperCase() + this.substring(1);
+  }
+}
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -37,25 +44,48 @@ class _ChatScreenState extends State<ChatScreen> {
     setupPushNotifications();
   }
 
+  final authenticatedUser = FirebaseAuth.instance.currentUser!;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
+      appBar:  AppBar(
         backgroundColor: const Color.fromARGB(255, 216, 14, 64),
         centerTitle: true,
-        title: const Text(
-          'Flutter chat',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+        title: StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(authenticatedUser.uid)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData || snapshot.data == null) {
+              return const Text(
+                'Loading...',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              );
+            }
+            var userData = snapshot.data!.data() as Map<String, dynamic>;
+            var userName =
+                (userData['username'] as String?)?.capitalizeFirstLetter() ??
+                    ''; // Capitalize first letter of username
+            return Text(
+              userName,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+              ),
+            );
+          },
         ),
         actions: [
           IconButton(
             onPressed: () {
-              // Show logout confirmation dialog
               showLogoutDialog(context);
             },
             icon: const Icon(
