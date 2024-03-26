@@ -54,7 +54,7 @@ class MessageBubble extends StatelessWidget {
               backgroundImage: NetworkImage(
                 userImage!,
               ),
-              backgroundColor: theme.colorScheme.primary.withAlpha(180),
+              backgroundColor: theme.colorScheme.primary.withAlpha(180), // profile picture placeholder
               radius: 23,
             ),
           ),
@@ -94,7 +94,7 @@ class MessageBubble extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isMe
                           ? Colors.white
-                          : theme.colorScheme.secondary.withAlpha(200),
+                          : Color.fromARGB(240, 216, 14, 65),
                       // Only show the message bubble's "speaking edge" if first in
                       // the chain.
                       // Whether the "speaking edge" is on the left or right depends

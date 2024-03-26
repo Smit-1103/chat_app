@@ -1,7 +1,10 @@
+import 'dart:ui';
+
 import 'package:chat_app/widgets/message_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class ChatMessages extends StatelessWidget {
   const ChatMessages({super.key});
@@ -27,46 +30,64 @@ class ChatMessages extends StatelessWidget {
         }
 
         if (!chatSnapshots.hasData || chatSnapshots.data!.docs.isEmpty) {
-          return const Center(
-            child: Text('No mesages found !!'),
-          );
-          // return Stack(
-          //   children: [
-          //     // Transparent and blurred background
-          //     Positioned.fill(
-          //       child: BackdropFilter(
-          //         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          //         child: Container(
-          //           color: Colors.black.withOpacity(0.5), // Adjust opacity here
-          //         ),
-          //       ),
-          //     ),
-          //     Positioned.fill(
-          //       child: Center(
-          //         child: Column(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           children: [
-          //             // Lottie animation
-          //             Lottie.asset(
-          //               'assets/images/profileImg.json',
-          //               width: 200,
-          //               height: 200,
-          //             ),
-          //             // Text below Lottie animation
-          //             const SizedBox(height: 20),
-          //             const Text(
-          //               'No messages here, say hello!',
-          //               style: TextStyle(
-          //                 color: Colors.white,
-          //                 fontSize: 16,
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ],
+          // return const Center(
+          //   child: Text('No mesages found !!'),
           // );
+          return MaterialApp(
+            home: Scaffold(
+              backgroundColor: Colors.transparent, // Transparent background
+              body: Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0), // Curved corners
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(
+                        sigmaX: 17.0, sigmaY: 18.0), // Blur effect
+                    child: Container(
+                      width: 230,
+                      height: 250,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100]!.withOpacity(0.8),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Hey there!',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Lottie.asset(
+                              'assets/images/welcome.json',
+                              width: 150,
+                              height: 150,
+                            ),
+                            const SizedBox(height: 10),
+                            
+                            const Text(
+                              'No messages here yet...',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
         }
 
         // something went wrong - check this - test case

@@ -125,7 +125,7 @@ class _NewMessageState extends State<NewMessage> {
                 width: 45,
                 height: 45,
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color.fromARGB(255, 216, 14, 64),
                   ),
