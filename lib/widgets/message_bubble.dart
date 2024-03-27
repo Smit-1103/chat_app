@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // A MessageBubble for showing a single chat message on the ChatScreen.
-class MessageBubble extends StatelessWidget {
+class MessageBubble extends StatefulWidget {
   // Create a message bubble which is meant to be the first in the sequence.
   const MessageBubble.first({
     super.key,
@@ -40,108 +40,173 @@ class MessageBubble extends StatelessWidget {
   final bool isMe;
 
   @override
+  State<MessageBubble> createState() => _MessageBubbleState();
+}
+
+class _MessageBubbleState extends State<MessageBubble> {
+  List<String> emojis = ['😊', '😂', '😍', '😎', '👍'];
+
+  bool showEmojiContainer = false;
+  String? selectedEmoji;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    return Stack(
-      children: [
-        if (userImage != null)
-          Positioned(
-            top: 15,
-            // Align user image to the right, if the message is from me.
-            right: isMe ? 0 : null,
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(
-                userImage!,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          showEmojiContainer = false;
+        });
+      },
+      child: Stack(
+        children: [
+          if (widget.userImage != null)
+            Positioned(
+              top: 15,
+              right: widget.isMe ? 0 : null,
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(
+                  widget.userImage!,
+                ),
+                backgroundColor: theme.colorScheme.primary.withAlpha(180),
+                radius: 23,
               ),
-              backgroundColor: theme.colorScheme.primary.withAlpha(180), // profile picture placeholder
-              radius: 23,
             ),
-          ),
-        Container(
-          // Add some margin to the edges of the messages, to allow space for the
-          // user's image.
-          margin: const EdgeInsets.symmetric(horizontal: 46),
-          child: Row(
-            // The side of the chat screen the message should show at.
-            mainAxisAlignment:
-                isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-            children: [
-              Column(
-                crossAxisAlignment:
-                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                children: [
-                  // First messages in the sequence provide a visual buffer at
-                  // the top.
-                  if (isFirstInSequence) const SizedBox(height: 18),
-                  if (username != null)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 13,
-                        right: 13,
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 46),
+            child: Row(
+              mainAxisAlignment:
+                  widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: widget.isMe
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  children: [
+                    if (widget.isFirstInSequence) const SizedBox(height: 18),
+                    if (widget.username != null)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 13,
+                          right: 13,
+                        ),
+                        child: Text(
+                          widget.username!,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
                       ),
-                      child: Text(
-                        username!,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                    GestureDetector(
+                      onLongPress: () {
+                        setState(() {
+                          showEmojiContainer = !showEmojiContainer;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: widget.isMe
+                              ? Colors.white
+                              : const Color.fromARGB(240, 216, 14, 65),
+                          borderRadius: BorderRadius.only(
+                            topLeft: !widget.isMe && widget.isFirstInSequence
+                                ? Radius.zero
+                                : const Radius.circular(12),
+                            topRight: widget.isMe && widget.isFirstInSequence
+                                ? Radius.zero
+                                : const Radius.circular(12),
+                            bottomLeft: const Radius.circular(12),
+                            bottomRight: const Radius.circular(12),
+                          ),
+                        ),
+                        constraints: const BoxConstraints(maxWidth: 200),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 14,
+                        ),
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 12,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.message,
+                              style: TextStyle(
+                                height: 1.3,
+                                color: widget.isMe
+                                    ? Colors.black87
+                                    : theme.colorScheme.onSecondary,
+                              ),
+                              softWrap: true,
+                            ),
+                            if (selectedEmoji != null)
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                padding: const EdgeInsets.all(2),
+                                margin: const EdgeInsets.only(top: 2),
+                                child: Text(
+                                  selectedEmoji!,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ),
-
-                  // The "speech" box surrounding the message.
-                  Container(
-                    decoration: BoxDecoration(
-                      color: isMe
-                          ? Colors.white
-                          : Color.fromARGB(240, 216, 14, 65),
-                      // Only show the message bubble's "speaking edge" if first in
-                      // the chain.
-                      // Whether the "speaking edge" is on the left or right depends
-                      // on whether or not the message bubble is the current user.
-                      borderRadius: BorderRadius.only(
-                        topLeft: !isMe && isFirstInSequence
-                            ? Radius.zero
-                            : const Radius.circular(12),
-                        topRight: isMe && isFirstInSequence
-                            ? Radius.zero
-                            : const Radius.circular(12),
-                        bottomLeft: const Radius.circular(12),
-                        bottomRight: const Radius.circular(12),
-                      ),
-                    ),
-                    // Set some reasonable constraints on the width of the
-                    // message bubble so it can adjust to the amount of text
-                    // it should show.
-                    constraints: const BoxConstraints(maxWidth: 200),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                      horizontal: 14,
-                    ),
-                    // Margin around the bubble.
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 4,
-                      horizontal: 12,
-                    ),
-                    child: Text(
-                      message,
-                      style: TextStyle(
-                        // Add a little line spacing to make the text look nicer
-                        // when multilined.
-                        height: 1.3,
-                        color: isMe
-                            ? Colors.black87
-                            : theme.colorScheme.onSecondary,
-                      ),
-                      softWrap: true,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+          if (showEmojiContainer)
+            Positioned(
+              bottom: 0,
+              left: widget.isMe ? null : 0,
+              right: widget.isMe ? 0 : null,
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: emojis
+                      .map(
+                        (emoji) => GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedEmoji = emoji;
+                              showEmojiContainer = false;
+                            });
+                          },
+                          child: Text(
+                            emoji,
+                            style: const TextStyle(fontSize: 20),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

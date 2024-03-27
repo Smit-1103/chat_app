@@ -76,11 +76,6 @@ class _NewMessageState extends State<NewMessage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Container(
-        //   height: 1,
-        //   color: Colors.grey,
-        // ),
-        // const SizedBox(height: 8),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Row(
