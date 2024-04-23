@@ -31,16 +31,17 @@ A group chat application built using Flutter and integrated with Firebase servic
 
 ## Check out the Application in action:
 
-https://github.com/Smit-1103/chat_app/assets/112495701/4d27dee5-13a2-4498-b9b7-f5a4ad5a5a55
 
 
-https://github.com/Smit-1103/chat_app/assets/112495701/30b7c838-c035-4624-a08f-5f8ede040eb4
+https://github.com/Smit-1103/chat_app/assets/112495701/dbfa4f82-7bd4-4d5d-a7f9-80cf1cd3f2ae
 
+<!-- https://github.com/Smit-1103/chat_app/assets/112495701/4d27dee5-13a2-4498-b9b7-f5a4ad5a5a55 -->
 
-https://github.com/Smit-1103/chat_app/assets/112495701/a351920b-a1e6-4ef8-9458-0d7dc35df2f3
+<!-- https://github.com/Smit-1103/chat_app/assets/112495701/30b7c838-c035-4624-a08f-5f8ede040eb4 -->
 
+<!-- https://github.com/Smit-1103/chat_app/assets/112495701/a351920b-a1e6-4ef8-9458-0d7dc35df2f3 -->
 
-https://github.com/Smit-1103/chat_app/assets/112495701/f32ec472-7958-4042-990c-489a4a24ecdd
+<!-- https://github.com/Smit-1103/chat_app/assets/112495701/f32ec472-7958-4042-990c-489a4a24ecdd -->
 
 
 ### Initial stage
